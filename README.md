@@ -1,7 +1,7 @@
 <div align="center">
   <img src=".github/assets/logo.png" alt="Ghosts in the Repo" width="280"/>
-
-
+</div>
+<div align="center">
 <img src=".github/assets/banner.svg" alt="Ghost Guard" width="100%"/>
 </div>
 [![Reusable Workflow](https://img.shields.io/badge/GitHub_Actions-reusable_workflow-2088FF?logo=githubactions&logoColor=white)](https://github.com/danielmackle/ghost-guard/blob/main/.github/workflows/claude.yml)
