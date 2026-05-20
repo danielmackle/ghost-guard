@@ -1,13 +1,13 @@
 <div align="center">
   <img src=".github/assets/logo.png" alt="Ghosts in the Repo" width="280"/>
 </div>
-<div align="center">
+
 <img src=".github/assets/banner.svg" alt="Ghost Guard" width="100%"/>
 
 
 [![Reusable Workflow](https://img.shields.io/badge/GitHub_Actions-reusable_workflow-2088FF?logo=githubactions&logoColor=white)](https://github.com/danielmackle/ghost-guard/blob/main/.github/workflows/claude.yml)
 [![Powered by Claude](https://img.shields.io/badge/Powered_by-Claude_Sonnet-D97757?logo=anthropic&logoColor=white)](https://anthropic.com)
-</div>
+
 When a contributor forks your Puppet module repo and opens a PR, Ghost Guard fetches the unified diff and asks Claude to assess whether it is safe to trigger acceptance tests. It posts a structured advisory comment on the PR — a human reviewer reads it and decides. Nothing is blocked automatically.
 
 ## How it works
