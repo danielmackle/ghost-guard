@@ -4,6 +4,7 @@
 <div align="center">
 <img src=".github/assets/banner.svg" alt="Ghost Guard" width="100%"/>
 </div>
+
 [![Reusable Workflow](https://img.shields.io/badge/GitHub_Actions-reusable_workflow-2088FF?logo=githubactions&logoColor=white)](https://github.com/danielmackle/ghost-guard/blob/main/.github/workflows/claude.yml)
 [![Powered by Claude](https://img.shields.io/badge/Powered_by-Claude_Sonnet-D97757?logo=anthropic&logoColor=white)](https://anthropic.com)
 
