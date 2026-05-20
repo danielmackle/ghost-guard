@@ -1,0 +1,53 @@
+<svg width="1280" height="240" viewBox="0 0 1280 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#060d1f"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <linearGradient id="greenblue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7ee787"/>
+      <stop offset="100%" stop-color="#58a6ff"/>
+    </linearGradient>
+    <linearGradient id="ghostfill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#aff5b4"/>
+      <stop offset="100%" stop-color="#56d364"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="240" fill="url(#bg)"/>
+
+  <!-- Dot grid decoration (right side) -->
+  <g fill="#21262d">
+    <circle cx="960" cy="25" r="2.5"/><circle cx="1020" cy="25" r="2.5"/><circle cx="1080" cy="25" r="2.5"/><circle cx="1140" cy="25" r="2.5"/><circle cx="1200" cy="25" r="2.5"/><circle cx="1260" cy="25" r="2.5"/>
+    <circle cx="960" cy="75" r="2.5"/><circle cx="1020" cy="75" r="2.5"/><circle cx="1080" cy="75" r="2.5"/><circle cx="1140" cy="75" r="2.5"/><circle cx="1200" cy="75" r="2.5"/><circle cx="1260" cy="75" r="2.5"/>
+    <circle cx="960" cy="125" r="2.5"/><circle cx="1020" cy="125" r="2.5"/><circle cx="1080" cy="125" r="2.5"/><circle cx="1140" cy="125" r="2.5"/><circle cx="1200" cy="125" r="2.5"/><circle cx="1260" cy="125" r="2.5"/>
+    <circle cx="960" cy="175" r="2.5"/><circle cx="1020" cy="175" r="2.5"/><circle cx="1080" cy="175" r="2.5"/><circle cx="1140" cy="175" r="2.5"/><circle cx="1200" cy="175" r="2.5"/><circle cx="1260" cy="175" r="2.5"/>
+    <circle cx="960" cy="215" r="2.5"/><circle cx="1020" cy="215" r="2.5"/><circle cx="1080" cy="215" r="2.5"/><circle cx="1140" cy="215" r="2.5"/><circle cx="1200" cy="215" r="2.5"/><circle cx="1260" cy="215" r="2.5"/>
+  </g>
+
+  <!-- Ghost body: X 60–180, shoulders at Y=130, bottom at Y=195, arch top ~Y=25 -->
+  <path d="M 60,195 L 60,130 C 60,25 180,25 180,130 L 180,195 Q 165,180 150,195 Q 135,210 120,195 Q 105,180 90,195 Q 75,210 60,195 Z"
+        fill="url(#ghostfill)"/>
+
+  <!-- Ghost eyes -->
+  <circle cx="98"  cy="118" r="13" fill="#0d1117"/>
+  <circle cx="142" cy="118" r="13" fill="#0d1117"/>
+  <circle cx="102" cy="113" r="5"  fill="white" opacity="0.65"/>
+  <circle cx="146" cy="113" r="5"  fill="white" opacity="0.65"/>
+
+  <!-- Title -->
+  <text x="220" y="105"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="82" font-weight="700" fill="#f0f6fc"
+        dominant-baseline="middle">Ghost Guard</text>
+
+  <!-- Accent underline -->
+  <rect x="220" y="126" width="710" height="3" fill="url(#greenblue)" rx="1.5"/>
+
+  <!-- Subtitle -->
+  <text x="222" y="168"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="27" fill="#8b949e"
+        dominant-baseline="middle">Advisory security scanner for fork PRs · Powered by Claude</text>
+</svg>

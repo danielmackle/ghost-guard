@@ -1,17 +1,25 @@
-# Ghost Guard
+<img src=".github/assets/banner.svg" alt="Ghost Guard" width="100%"/>
 
-Advisory security scanner for fork PRs in Puppet module repositories, powered by Claude.
+[![Reusable Workflow](https://img.shields.io/badge/GitHub_Actions-reusable_workflow-2088FF?logo=githubactions&logoColor=white)](https://github.com/danielmackle/ghost-guard/blob/main/.github/workflows/claude.yml)
+[![Powered by Claude](https://img.shields.io/badge/Powered_by-Claude_Sonnet-D97757?logo=anthropic&logoColor=white)](https://anthropic.com)
+[![Advisory only](https://img.shields.io/badge/scan-advisory_only-238636)](https://github.com/danielmackle/ghost-guard)
 
-When a contributor forks your repo and opens a PR, Ghost Guard fetches the unified diff and asks Claude to assess whether it is safe to trigger acceptance tests. It posts a structured comment on the PR — a human reviewer reads it and decides. Nothing is blocked automatically.
+When a contributor forks your Puppet module repo and opens a PR, Ghost Guard fetches the unified diff and asks Claude to assess whether it is safe to trigger acceptance tests. It posts a structured advisory comment on the PR — a human reviewer reads it and decides. Nothing is blocked automatically.
 
 ## How it works
 
-1. A fork PR is opened or pushed to in your repo
-2. Your caller workflow fires on `pull_request_target` and calls this reusable workflow
-3. `ghost_guard_scan.rb` fetches the unified diff from the GitHub API (no fork code is checked out)
-4. The diff is sent to `claude-sonnet-4-6` with a structured threat-model prompt
-5. Claude returns a risk verdict and findings as JSON
-6. The script posts or updates an advisory comment on the PR
+```mermaid
+flowchart LR
+    A["Fork PR opened\nor updated"] --> B["pull_request_target\nfires in your repo"]
+    B --> C{Is fork?}
+    C -- No --> D[Skip]
+    C -- Yes --> E["workflow_call\ndanielmackle/ghost-guard"]
+    E --> F["Fetch unified diff\nvia GitHub API"]
+    F --> G["Claude analysis\nclaude-sonnet-4-6"]
+    G --> H["Post advisory\ncomment on PR"]
+```
+
+> Fork code is never checked out or executed. The scan reads only the unified diff text via the GitHub API.
 
 ## Adding Ghost Guard to your repo
 
@@ -37,19 +45,38 @@ jobs:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
-> **Important:** Use `pull_request_target`, not `pull_request`. Only `pull_request_target` has access to repo secrets for fork PRs. The `if:` condition ensures the scan only runs for PRs from forks — internal branch PRs are skipped.
+> **Use `pull_request_target`, not `pull_request`.** Only `pull_request_target` has access to repo secrets for fork PRs. The `if:` condition ensures the scan only runs on fork PRs — internal branch PRs are skipped.
 
 ### 2. Add the API key secret
 
-In your repo: **Settings → Secrets and variables → Actions → New repository secret**
+**Settings → Secrets and variables → Actions → New repository secret**
 
 | Name | Value |
 |---|---|
 | `ANTHROPIC_API_KEY` | Your Anthropic API key |
 
-`GITHUB_TOKEN` is provided automatically by GitHub Actions — no configuration needed.
+`GITHUB_TOKEN` is provided automatically — no configuration needed.
 
-That's it. Ghost Guard will run on the next fork PR.
+## Sample output
+
+Ghost Guard posts a comment like this on every scanned fork PR:
+
+---
+
+**Ghost Guard Advisory Scan**
+
+**Risk:** ⚠️ Needs scrutiny before running tests
+
+**Summary:** New repository fixture pointing to an external, unverified GitHub repo that will be cloned during test runs
+
+**Findings:**
+- `.fixtures.yml:7–9` — A new repositories entry pulls code from an unverified third-party GitHub repo at a mutable ref (`main`). During acceptance tests this repo will be cloned and its code executed in CI, giving it access to secrets.
+
+> Advisory only — not a substitute for human review. This scan helps assess whether it is safe to trigger acceptance tests on this fork PR.
+
+---
+
+The comment is updated in place on each new push to the PR — one comment per PR, always current.
 
 ## Risk levels
 
@@ -75,13 +102,12 @@ That's it. Ghost Guard will run on the next fork PR.
 
 ## Requirements
 
-- Your repo must be on GitHub (public or private)
-- `ANTHROPIC_API_KEY` secret added to your repo's Actions secrets
-- GitHub-hosted runner (`ubuntu-latest`) — Ruby is pre-installed, no extra dependencies
+- `ANTHROPIC_API_KEY` secret in your repo's Actions secrets
+- GitHub-hosted runner (`ubuntu-latest`) — Ruby stdlib is used, no extra gems needed
+- This repo must remain **public** for cross-repo `workflow_call` to work
 
 ## Security properties
 
-- **Fork code is never checked out or executed.** The scan fetches only the unified diff text via the GitHub API.
-- **`pull_request_target` runs in the base repo context**, so secrets are available and safe from fork code.
-- **This repo must remain public** for cross-repo `workflow_call` to work without a personal access token.
-- The scan is advisory only — it never blocks a merge or prevents tests from running.
+- Fork code is never checked out or executed
+- `pull_request_target` runs in the base repo context — secrets are safe
+- The scan is advisory only — it never blocks a merge or prevents tests from running
