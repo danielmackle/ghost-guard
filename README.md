@@ -1,4 +1,5 @@
 <div align="center">
+  **By Team Ghosts in the Repo!**
   <img src=".github/assets/logo.png" alt="Ghosts in the Repo" width="280"/>
 </div>
 
