@@ -1,0 +1,26 @@
+name: Ghost Guard Scan
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  scan:
+    if: github.event.pull_request.head.repo.fork == true
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      # Checks out the BASE repo at the base ref (default for pull_request_target).
+      # Fork code is never fetched — the scan only reads the unified diff via the API.
+      - name: Checkout base repo
+        uses: actions/checkout@v4
+
+      - name: Run Ghost Guard scan
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: ruby .github/scripts/ghost_guard_scan.rb
