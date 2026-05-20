@@ -1,26 +1,38 @@
 name: Ghost Guard Scan
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+  workflow_call:
+    inputs:
+      pr_number:
+        description: PR number to scan
+        required: true
+        type: number
+      repo:
+        description: Target repository in owner/repo format (e.g. octocat/my-puppet-module)
+        required: true
+        type: string
+    secrets:
+      anthropic_api_key:
+        description: Anthropic API key for Claude
+        required: true
 
 jobs:
   scan:
-    if: github.event.pull_request.head.repo.fork == true
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: read
     steps:
-      # Checks out the BASE repo at the base ref (default for pull_request_target).
-      # Fork code is never fetched — the scan only reads the unified diff via the API.
-      - name: Checkout base repo
+      - name: Checkout ghost-guard
         uses: actions/checkout@v4
+        with:
+          repository: danielmackle/ghost-guard
+          ref: main
 
       - name: Run Ghost Guard scan
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.anthropic_api_key }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          REPO: ${{ inputs.repo }}
         run: ruby .github/scripts/ghost_guard_scan.rb
