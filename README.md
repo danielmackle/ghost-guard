@@ -42,11 +42,7 @@ jobs:
   ghost-guard:
     if: github.event.pull_request.head.repo.fork == true
     uses: danielmackle/ghost-guard/.github/workflows/claude.yml@main
-    with:
-      pr_number: ${{ github.event.pull_request.number }}
-      repo: ${{ github.repository }}
-    secrets:
-      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    secrets: inherit
 ```
 
 > **Use `pull_request_target`, not `pull_request`.** Only `pull_request_target` has access to repo secrets for fork PRs. The `if:` condition ensures the scan only runs on fork PRs — internal branch PRs are skipped.

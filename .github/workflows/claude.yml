@@ -2,15 +2,6 @@ name: Ghost Guard Scan
 
 on:
   workflow_call:
-    inputs:
-      pr_number:
-        description: PR number to scan
-        required: true
-        type: number
-      repo:
-        description: Target repository in owner/repo format (e.g. octocat/my-puppet-module)
-        required: true
-        type: string
     secrets:
       anthropic_api_key:
         description: Anthropic API key for Claude
@@ -33,6 +24,6 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.anthropic_api_key }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ inputs.pr_number }}
-          REPO: ${{ inputs.repo }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: ruby .github/scripts/ghost_guard_scan.rb
