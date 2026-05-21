@@ -138,7 +138,11 @@ def analyze_diff(diff)
 
   text = JSON.parse(res.body).dig('content', 0, 'text').to_s.strip
   # Strip ```json fences if Claude wraps the output despite instructions.
-  text = text.sub(/\A```(?:json)?\s*/, '').sub(/\s*```\z/, '')
+  text = text.sub(/\A```(?:json)?\s*/m, '').sub(/\s*```\z/m, '')
+  # Extract the JSON object in case Claude adds a preamble sentence.
+  text = text[text.index('{')..text.rindex('}')] if text.include?('{')
+  # Remove trailing commas before } or ] — Claude occasionally emits them.
+  text = text.gsub(/,(\s*[}\]])/, '\1')
   JSON.parse(text)
 end
 
