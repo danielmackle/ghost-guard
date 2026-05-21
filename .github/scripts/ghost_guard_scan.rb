@@ -63,11 +63,51 @@ def analyze_diff(diff)
     - CODEOWNERS             : removal of legitimate reviewers (lower weight)
     - metadata.json          : source URL changes (lower weight)
 
+    Puppet-specific risk vectors — apply additional scrutiny to these:
+
+    GEM VERSION BUMPS (Gemfile)
+    A version bump to a gem version that does not yet exist on rubygems.org is a known
+    supply-chain attack: the attacker publishes a malicious gem at that exact version and
+    bundle install pulls it automatically. Flag as HIGH when:
+    - A version is pinned with '=' to a version that looks very recent or implausible
+      (e.g. jumping from 1.2.1 to 1.2.99 or to a future-dated pre-release)
+    - A pessimistic constraint '~>' is widened in a way that could pull in an unpublished version
+    Flag as needs_scrutiny when a version is bumped to a plausible but unverifiable new patch.
+
+    PUPPET PROVIDERS (lib/puppet/provider/**)
+    Providers execute as root during catalog application on managed nodes.
+    Flag as HIGH any: outbound HTTP/socket calls, ENV secret reads, shell commands via
+    Puppet::Util::Execution.execute, backticks, system(), or Open3.
+
+    CUSTOM FACTS (lib/facter/** or facts.d/**)
+    Custom facts run on every Puppet agent at every catalog request.
+    Flag as HIGH any: outbound HTTP calls, reads of sensitive paths (/root/.ssh,
+    /etc/passwd, credential files), or ENV access that is then transmitted.
+
+    PUPPET MANIFESTS (manifests/**)
+    Flag as needs_scrutiny: new exec { } resources, file { } resources writing to
+    sensitive system paths, or package sources changed to non-standard URLs.
+    Flag as HIGH: exec resources whose command reads ENV or makes network calls.
+
+    HIERA DATA (data/**)
+    Hiera values are injected directly into class parameters at catalog compile time.
+    Flag as needs_scrutiny: new keys that look like credentials or tokens, base64-encoded
+    blobs, or lookup() calls pointing to external data sources.
+
+    BOLT TASKS AND PLANS (tasks/**, plans/**)
+    Tasks and plans execute arbitrary code on remote nodes via Bolt.
+    Flag as HIGH any outbound network calls, secret ENV reads, or file exfiltration.
+
+    MODULE METADATA (metadata.json)
+    Flag as HIGH: dependency source URLs changed from forge.puppet.com to any other domain.
+    Flag as needs_scrutiny: version constraints widened significantly or new dependencies added.
+
     Assign exactly one risk level:
     - no_concerns    : no suspicious changes; routine updates
     - minor          : touches a high-scrutiny file but the change is clearly explainable
-    - needs_scrutiny : ambiguous but potentially dangerous
-    - high           : clear indicators — secret access, network exfiltration, backdoor, source redirect
+    - needs_scrutiny : ambiguous but potentially dangerous (e.g. new gem, exec resource, external fixture)
+    - high           : clear indicators — secret access, network exfiltration, backdoor, source redirect,
+                       or gem bumped to a plausibly non-existent version
 
     Reply with a single JSON object and nothing else:
     {
